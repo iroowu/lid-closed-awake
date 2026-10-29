@@ -2,7 +2,8 @@
 
 讓 Mac 筆電**闔上蓋子也繼續工作**。把電腦留在家裡、闔上蓋子出門，照樣可以用手機的 Claude App 遙控電腦上的 Claude 做事。
 
-> ⚠️ **只支援 Mac 筆電（macOS）。Windows 筆電、桌上型電腦不能用。**
+> ⚠️ **這個工具只支援 Mac 筆電（macOS），Windows 筆電、桌上型電腦不能用。**
+> Windows 筆電可以照下方「[Windows 筆電的設定教學](#windows-筆電的設定教學作者沒有實測)」自己設定（作者沒有實測）。
 >
 > 分享者：儒儒醫師 Dr. Iroo｜免費、MIT 授權，可自由使用與轉傳。
 
@@ -97,7 +98,7 @@ Claude 桌面版的「手機遙控」（Remote Control），是讓手機看得�
 ## 常見問題
 
 **Windows 筆電可以用嗎？**
-不行，這個工具只支援 Mac 筆電。Windows 內建就有類似設定：「控制台 → 電源選項 → 選擇闔上螢幕時的行為」，把「接上電源」那一欄改成「不執行任何動作」（作者沒有實測，僅供參考）。
+這個工具本身不行，它只支援 Mac。不過 Windows 內建就有一樣的開關，照下一段「Windows 筆電的設定教學」自己設就好。
 
 **一般的防睡 App 或 `caffeinate` 不行嗎？**
 Mac 筆電闔上蓋子就會睡（除非接了外接螢幕、鍵盤和電源），這一步一般的防睡指令擋不住，所以要改系統的睡眠開關。
@@ -117,6 +118,54 @@ Mac 筆電闔上蓋子就會睡（除非接了外接螢幕、鍵盤和電源）�
 `/Library/Application Support/LidClosedAwake/`（電池保護程式）、`/Library/LaunchDaemons/local.lidclosedawake.guard.plist`（每 60 秒檢查電量），
 選了進階才會多 `~/Library/Application Support/LidClosedAwake/` 與 `~/Library/LaunchAgents/local.lidclosedawake.display.plist`。
 還原時全部刪掉。紀錄在 `/Library/Logs/LidClosedAwake.log`。
+
+## Windows 筆電的設定教學（作者沒有實測）
+
+> ⚠️ 作者只有 Mac，**下面的 Windows 步驟沒有實際測試過**，是照微軟官方說明整理的。
+> 各品牌筆電、各版 Windows 的選單名稱可能略有不同，設完請自己闔蓋試一次。
+
+Windows 不需要另外下載工具，系統內建就有「闔上蓋子時不執行任何動作」的設定。
+建議**只改「接上電源」**，用電池時維持原本的闔蓋睡眠，等於自帶電池保護。
+
+### 做法一：用選單設定
+
+1. 開「控制台」（按開始鍵，打「控制台」）→「硬體和音效」→「電源選項」。
+2. 左邊點「選擇闔上螢幕時的行為」。
+3. 「闔上螢幕時」那一列，**「接上電源」選「不執行任何動作」**；「使用電池」維持「睡眠」。
+4. 按「儲存變更」。
+5. 再到「設定 → 系統 → 電源與電池（或「電源」）→ 螢幕與睡眠」，把「**接上電源時**，讓裝置進入睡眠狀態」改成「**永不**」。
+   不改的話，電腦放著不動一段時間後還是會自己睡著。
+
+### 做法二：用指令設定
+
+按開始鍵，打「命令提示字元」，按右鍵選「以系統管理員身分執行」，一行一行貼上、按 Enter：
+
+```bat
+powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS LIDACTION 0
+powercfg /setactive SCHEME_CURRENT
+powercfg /change standby-timeout-ac 0
+```
+
+- 第一行：接上電源時，闔上蓋子「不執行任何動作」（0＝不執行任何動作、1＝睡眠，[微軟官方說明](https://learn.microsoft.com/en-us/windows-hardware/customize/power-settings/power-button-and-lid-settings-lid-switch-close-action)）。
+- 第二行：讓設定立刻生效。
+- 第三行：接上電源時永不自動睡眠。
+
+### 還原
+
+```bat
+powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS LIDACTION 1
+powercfg /setactive SCHEME_CURRENT
+powercfg /change standby-timeout-ac 30
+```
+
+最後一行的 30 是「放著 30 分鐘後睡眠」，可以改成你原本習慣的分鐘數。
+
+### 設好之後
+
+- **手機遙控**：Claude 桌面版的 Windows 版，應該一樣是在 Code 分頁打 `/remote-control`，這一步作者也沒有在 Windows 上實測。
+- **驗收**：插著電、闔上蓋子兩三分鐘，再用手機的 Claude App 傳一句話給電腦上的對話，看它有沒有回。
+- **安全須知跟 Mac 一樣**：插著電再闔蓋、不要塞進包包或悶在棉被裡、帶出門前改回來。
+- 闔蓋後螢幕會關掉，可能會上鎖；只影響要「操作畫面」的工作，手機遙控聊天、讀寫檔案不受影響。
 
 ## 檔案
 
